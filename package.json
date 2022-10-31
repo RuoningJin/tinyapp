@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/RuoningJin/tinyapp/issues"
   },
-  "homepage": "https://github.com/RuoningJin/tinyapp#readme"
+  "homepage": "https://github.com/RuoningJin/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
