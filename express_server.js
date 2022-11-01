@@ -8,6 +8,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//function that creates random string for the short url
 const generateRandomString = () => {
   const possChar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let randomString = '';
@@ -17,8 +18,10 @@ const generateRandomString = () => {
   return randomString;
 };
 
+//routes starts here
 app.use(express.urlencoded({ extended: true }));
 
+//redirect the short url to the actual webpage
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
@@ -33,6 +36,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//generates new short url
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const newID = generateRandomString();
@@ -44,6 +48,14 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+
+//delete existing urls
+app.post("/urls/:id/delete", (req, res) => {
+
+  delete urlDatabase[req.params.id];
+
+  res.redirect(`/urls`);
 });
 
 app.get("/urls/:id", (req, res) => {
