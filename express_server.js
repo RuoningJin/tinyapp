@@ -1,7 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const app = express();
-app.use(cookieParser());
 const PORT = 8080;
 app.set("view engine", "ejs");
 
@@ -20,7 +19,7 @@ const generateRandomString = () => {
   return randomString;
 };
 
-//routes starts here
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 //redirect the short url to the actual webpage
@@ -31,6 +30,16 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("Hello!");
+});
+
+//Register
+app.get("/register", (req, res) => {
+  const templateVars = {username: req.cookies["username"]};
+  res.render("register", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  res.cookie('username', `${req.body.username}`);
 });
 
 //login endpoint
