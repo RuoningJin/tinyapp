@@ -81,10 +81,11 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  if (findUser(req.body.email) === null) {
+  const user = findUser(req.body.email);
+
+  if (user === null || user.password !== req.body.password) {
     res.status(403).send('403 Forbidden');
   }
-  const user = findUser(req.body.email);
   res.cookie('user_id', `${user.id}`);
   res.redirect('/urls');
 });

@@ -29,7 +29,8 @@
       <% } %>
       <% if (user) {%>
         <form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
-          <td>Logged in as: <%= user.email %></td>
+          Logged in as: <%= user.email %>!
+          <div class="col 1"></div>
           <button type="submit" class="btn btn-outline-light my-2 my-sm-0">Logout</button>
         </form>
       <% } %>
