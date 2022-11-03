@@ -76,7 +76,8 @@ app.post("/register", (req, res) => {
 
 //login endpoint
 app.get("/login", (req, res) => {
-  res.redirect('/urls');
+  const templateVars = {user: users[req.cookies['user_id']]};
+  res.render("login", templateVars);
 });
 
 app.post("/login", (req, res) => {

@@ -20,15 +20,12 @@
     </div>
     <div>
       <% if (!user) {%>
-        <form class="form-inline my-2 my-lg-0" method="POST" action="/login">
-          <input
-          class="form-control mr-sm-2"
-          type="email"
-          name="email"
-          placeholder="Username"
-          />
-          <button type="submit" class="btn btn-outline-light my-2 my-sm-0">Login</button>
-        </form>
+        <a href="/login">
+          <button type="button" class="btn btn-outline-light my-2 my-sm-0">Login</button>
+        </a>
+        <a href="/register">
+          <button type="button" class="btn btn-outline-light my-2 my-sm-0">Register</button>
+        </a>
       <% } %>
       <% if (user) {%>
         <form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
