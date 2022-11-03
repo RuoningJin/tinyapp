@@ -158,8 +158,14 @@ app.get("/urls/new", (req, res) => {
 //change existing url
 
 app.post("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    res.status(400).send("Bad Request");
+  }
   if (!req.cookies['user_id']) {
     res.send("Please login to enable this feature.");
+  }
+  if (urlDatabase[req.params.id].userID !== req.cookies['user_id']) {
+    res.status(403).send('403 Forbidden');
   }
   urlDatabase[req.params.id].longURL = req.body.longURL;
   res.redirect(`/urls`);
@@ -167,7 +173,15 @@ app.post("/urls/:id", (req, res) => {
 
 //delete existing urls
 app.post("/urls/:id/delete", (req, res) => {
-
+  if (!urlDatabase[req.params.id]) {
+    res.status(400).send("Bad Request");
+  }
+  if (!req.cookies['user_id']) {
+    res.send("Please login to enable this feature.");
+  }
+  if (urlDatabase[req.params.id].userID !== req.cookies['user_id']) {
+    res.status(403).send('403 Forbidden');
+  }
   delete urlDatabase[req.params.id];
   res.redirect(`/urls`);
 });
