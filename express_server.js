@@ -20,7 +20,6 @@ const users = {
     password: "dishwasher-funk",
   },
 };
-let user;
 
 //function that creates random string for the short url
 const generateRandomString = () => {
@@ -30,6 +29,14 @@ const generateRandomString = () => {
     randomString += possChar.charAt(Math.floor(Math.random() * possChar.length));
   }
   return randomString;
+};
+const findUser = (targetEmail) => {
+  for (const user in users) {
+    if (users[user].email === targetEmail) {
+      return user;
+    }
+  }
+  return null;
 };
 
 app.use(cookieParser());
@@ -52,6 +59,9 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  if (!req.body.email || !req.body.password || findUser(req.body.email) !== null) {
+    res.status(400).send('400 Bad Request');
+  }
   const newID = generateRandomString();
 
   users[newID] = {
@@ -61,9 +71,7 @@ app.post("/register", (req, res) => {
   };
 
   res.cookie('user_id', `${newID}`);
-
   res.redirect('/urls');
-  
 });
 
 //login endpoint
