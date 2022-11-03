@@ -45,6 +45,9 @@ app.use(express.urlencoded({ extended: true }));
 //redirect the short url to the actual webpage
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
+  if (!longURL) {
+    res.status(404).send('404 Page Not Found');
+  }
   res.redirect(longURL);
 });
 
@@ -107,12 +110,16 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  
   const templateVars = {user: users[req.cookies['user_id']], urls: urlDatabase};
   res.render("urls_index", templateVars);
 });
 
 //generates new short url
 app.post("/urls", (req, res) => {
+  if (!req.cookies['user_id']) {
+    res.send("Please login to enable this function.");
+  }
   console.log(req.body); // Log the POST request body to the console
   const newID = generateRandomString();
   urlDatabase[newID] = req.body.longURL;
@@ -136,6 +143,7 @@ app.post("/urls/:id", (req, res) => {
 
 //delete existing urls
 app.post("/urls/:id/delete", (req, res) => {
+
   delete urlDatabase[req.params.id];
   res.redirect(`/urls`);
 });
