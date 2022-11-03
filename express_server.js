@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080;
+const morgan = require('morgan');
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -58,6 +59,7 @@ const urlsForUser = (id) => {
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
 
 //redirect the short url to the actual webpage
 app.get("/u/:id", (req, res) => {
