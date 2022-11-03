@@ -5,8 +5,14 @@ const PORT = 8080;
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 const users = {
   userRandomID: {
@@ -21,7 +27,7 @@ const users = {
   },
 };
 
-//function that creates random string for the short url
+//functions
 const generateRandomString = () => {
   const possChar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let randomString = '';
@@ -38,13 +44,25 @@ const findUser = (targetEmail) => {
   }
   return null;
 };
+const urlsForUser = (id) => {
+  const userData = {};
+  for (const data in urlDatabase) {
+    if (urlDatabase[data].userID === id) {
+      userData[data] = urlDatabase[data];
+    }
+  }
+  return userData;
+};
+
+//middlewares
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 //redirect the short url to the actual webpage
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id].longURL;
+
   if (!longURL) {
     res.status(404).send('404 Page Not Found');
   }
@@ -110,19 +128,22 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  
-  const templateVars = {user: users[req.cookies['user_id']], urls: urlDatabase};
+  if (!req.cookies['user_id']) {
+    res.send("Please login to enable the features.");
+  }
+  const userData = urlsForUser(req.cookies['user_id']);
+  const templateVars = {user: users[req.cookies['user_id']], urls: userData};
   res.render("urls_index", templateVars);
 });
 
 //generates new short url
 app.post("/urls", (req, res) => {
   if (!req.cookies['user_id']) {
-    res.send("Please login to enable this function.");
+    res.send("Please login to enable this feature.");
   }
   console.log(req.body); // Log the POST request body to the console
   const newID = generateRandomString();
-  urlDatabase[newID] = req.body.longURL;
+  urlDatabase[newID] = {longURL: req.body.longURL, userID: req.cookies['user_id']};
   res.redirect(`/urls/${newID}`);
 });
 
@@ -135,10 +156,13 @@ app.get("/urls/new", (req, res) => {
 });
 
 //change existing url
-app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect(`/urls`);
 
+app.post("/urls/:id", (req, res) => {
+  if (!req.cookies['user_id']) {
+    res.send("Please login to enable this feature.");
+  }
+  urlDatabase[req.params.id].longURL = req.body.longURL;
+  res.redirect(`/urls`);
 });
 
 //delete existing urls
@@ -150,7 +174,13 @@ app.post("/urls/:id/delete", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']], id: req.params.id, longURL: urlDatabase[req.params.id] };
+  if (!req.cookies['user_id']) {
+    res.send("Please login to enable this feature.");
+  }
+  if (urlDatabase[req.params.id].userID !== req.cookies['user_id']) {
+    res.status(403).send('403 Forbidden');
+  }
+  const templateVars = { user: users[req.cookies['user_id']], id: req.params.id, longURL: urlDatabase[req.params.id].longURL };
   res.render("urls_show", templateVars);
 });
 
