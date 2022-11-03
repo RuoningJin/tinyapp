@@ -19,20 +19,20 @@
       </div>
     </div>
     <div>
-      <% if (!username) {%>
+      <% if (!user) {%>
         <form class="form-inline my-2 my-lg-0" method="POST" action="/login">
           <input
           class="form-control mr-sm-2"
-          type="text"
-          name="username"
+          type="email"
+          name="email"
           placeholder="Username"
           />
           <button type="submit" class="btn btn-outline-light my-2 my-sm-0">Login</button>
         </form>
       <% } %>
-      <% if (username) {%>
+      <% if (user) {%>
         <form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
-          <td>Logged in as: <%= username %></td>
+          <td>Logged in as: <%= user.email %></td>
           <button type="submit" class="btn btn-outline-light my-2 my-sm-0">Logout</button>
         </form>
       <% } %>
