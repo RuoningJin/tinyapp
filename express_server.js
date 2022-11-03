@@ -33,7 +33,7 @@ const generateRandomString = () => {
 const findUser = (targetEmail) => {
   for (const user in users) {
     if (users[user].email === targetEmail) {
-      return user;
+      return users[user];
     }
   }
   return null;
@@ -81,7 +81,11 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('username', `${req.body.username}`);
+  if (findUser(req.body.email) === null) {
+    res.status(403).send('403 Forbidden');
+  }
+  const user = findUser(req.body.email);
+  res.cookie('user_id', `${user.id}`);
   res.redirect('/urls');
 });
 
