@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080;
 const morgan = require('morgan');
+const bcrypt = require('bcryptjs');
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -19,12 +20,12 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   },
 };
 
@@ -89,11 +90,11 @@ app.post("/register", (req, res) => {
     res.status(400).send('400 Bad Request');
   }
   const newID = generateRandomString();
-
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   users[newID] = {
     id: newID,
     email: req.body.email,
-    password: req.body.password,
+    password: hashedPassword,
   };
 
   res.cookie('user_id', `${newID}`);
@@ -112,7 +113,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const user = findUser(req.body.email);
 
-  if (user === null || user.password !== req.body.password) {
+  if (user === null || !bcrypt.compareSync(req.body.password, user.password)) {
     res.status(403).send('403 Forbidden');
   }
   res.cookie('user_id', `${user.id}`);
