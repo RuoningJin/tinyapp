@@ -91,12 +91,12 @@ app.post("/login", (req, res) => {
 
 //logout endpoint
 app.get("/logout", (req, res) => {
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 app.get("/urls", (req, res) => {
