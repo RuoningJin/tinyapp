@@ -4,7 +4,7 @@ const app = express();
 const PORT = 8080;
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
-const findUser = require('./helpers.js');
+const {findUser} = require('./helpers.js');
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -87,7 +87,7 @@ app.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).send('400 Bad Request');
   }
-  if (findUser(req.body.email, users) !== null) {
+  if (findUser(req.body.email, users) !== undefined) {
     return res.send('User email already exist.');
   }
   const newID = generateRandomString();
@@ -114,7 +114,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const user = findUser(req.body.email, users);
 
-  if (user === null || !bcrypt.compareSync(req.body.password, user.password)) {
+  if (user === undefined || !bcrypt.compareSync(req.body.password, user.password)) {
     res.status(403).send('403 Forbidden');
   }
   req.session.user_id = user.id;

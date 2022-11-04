@@ -4,7 +4,7 @@ const findUser = (targetEmail, database) => {
       return database[user];
     }
   }
-  return null;
+  return undefined;
 };
 
-module.exports = findUser;
+module.exports = {findUser};
