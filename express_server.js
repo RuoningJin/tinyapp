@@ -43,11 +43,8 @@ app.use(cookieSession({
 
 //redirect the short url to the actual webpage
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id].longURL;
 
-  if (!longURL) {
-    return res.status(404).send('404 Page Not Found');
-  }
+  const longURL = urlDatabase[req.params.id].longURL;
   return res.redirect(longURL);
 });
 
@@ -112,7 +109,6 @@ app.get("/logout", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session = null;
-  console.log(req.session);
   return res.redirect('/login');
 });
 
@@ -130,7 +126,6 @@ app.post("/urls", (req, res) => {
   if (!req.session.user_id) {
     return res.send("Please login to enable this feature.");
   }
-  console.log(req.body); // Log the POST request body to the console
   const newID = generateRandomString();
   urlDatabase[newID] = {longURL: req.body.longURL, userID: req.session.user_id};
   return res.redirect(`/urls/${newID}`);
@@ -152,9 +147,6 @@ app.post("/urls/:id", (req, res) => {
   }
   if (!req.session.user_id) {
     return res.send("Please login to enable this feature.");
-  }
-  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
-    return res.status(403).send('403 Forbidden');
   }
   urlDatabase[req.params.id].longURL = req.body.longURL;
   return res.redirect(`/urls`);
