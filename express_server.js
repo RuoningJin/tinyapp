@@ -46,25 +46,25 @@ app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id].longURL;
 
   if (!longURL) {
-    res.status(404).send('404 Page Not Found');
+    return res.status(404).send('404 Page Not Found');
   }
-  res.redirect(longURL);
+  return res.redirect(longURL);
 });
 
 app.get("/", (req, res) => {
   if (!req.session.user_id) {
-    res.redirect('/login');
+    return res.redirect('/login');
   }
-  res.redirect('/urls');
+  return res.redirect('/urls');
 });
 
 //Register
 app.get("/register", (req, res) => {
   const templateVars = {user: users[req.session.user_id]};
   if (req.session.user_id) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
-  res.render("register", templateVars);
+  return res.render("register", templateVars);
 });
 
 app.post("/register", (req, res) => {
@@ -83,116 +83,116 @@ app.post("/register", (req, res) => {
   };
 
   req.session.user_id = newID;
-  res.redirect('/urls');
+  return res.redirect('/urls');
 });
 
 //login endpoint
 app.get("/login", (req, res) => {
   const templateVars = {user: users[req.session.user_id]};
   if (req.session.user_id) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
-  res.render("login", templateVars);
+  return res.render("login", templateVars);
 });
 
 app.post("/login", (req, res) => {
   const user = findUser(req.body.email, users);
 
   if (user === undefined || !bcrypt.compareSync(req.body.password, user.password)) {
-    res.status(403).send('403 Forbidden');
+    return res.status(403).send('403 Forbidden');
   }
   req.session.user_id = user.id;
-  res.redirect('/urls');
+  return res.redirect('/urls');
 });
 
 //logout endpoint
 app.get("/logout", (req, res) => {
-  res.redirect('/login');
+  return res.redirect('/login');
 });
 
 app.post("/logout", (req, res) => {
   req.session = null;
   console.log(req.session);
-  res.redirect('/login');
+  return res.redirect('/login');
 });
 
 app.get("/urls", (req, res) => {
   if (!req.session.user_id) {
-    res.send("Please login to enable the features.");
+    return res.send("Please login to enable the features.");
   }
   const userData = urlsForUser(req.session.user_id, urlDatabase);
   const templateVars = {user: users[req.session.user_id], urls: userData};
-  res.render("urls_index", templateVars);
+  return res.render("urls_index", templateVars);
 });
 
 //generates new short url
 app.post("/urls", (req, res) => {
   if (!req.session.user_id) {
-    res.send("Please login to enable this feature.");
+    return res.send("Please login to enable this feature.");
   }
   console.log(req.body); // Log the POST request body to the console
   const newID = generateRandomString();
   urlDatabase[newID] = {longURL: req.body.longURL, userID: req.session.user_id};
-  res.redirect(`/urls/${newID}`);
+  return res.redirect(`/urls/${newID}`);
 });
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {user: users[req.session.user_id]};
   if (!req.session.user_id) {
-    res.redirect("/login");
+    return res.redirect("/login");
   }
-  res.render("urls_new", templateVars);
+  return res.render("urls_new", templateVars);
 });
 
 //change existing url
 
 app.post("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    res.status(400).send("Bad Request");
+    return res.status(400).send("Bad Request");
   }
   if (!req.session.user_id) {
-    res.send("Please login to enable this feature.");
+    return res.send("Please login to enable this feature.");
   }
   if (urlDatabase[req.params.id].userID !== req.session.user_id) {
-    res.status(403).send('403 Forbidden');
+    return res.status(403).send('403 Forbidden');
   }
   urlDatabase[req.params.id].longURL = req.body.longURL;
-  res.redirect(`/urls`);
+  return res.redirect(`/urls`);
 });
 
 //delete existing urls
 app.post("/urls/:id/delete", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    res.status(400).send("Bad Request");
+    return res.status(400).send("Bad Request");
   }
   if (!req.session.user_id) {
-    res.send("Please login to enable this feature.");
+    return res.send("Please login to enable this feature.");
   }
   if (urlDatabase[req.params.id].userID !== req.session.user_id) {
-    res.status(403).send('403 Forbidden');
+    return res.status(403).send('403 Forbidden');
   }
   delete urlDatabase[req.params.id];
-  res.redirect(`/urls`);
+  return res.redirect(`/urls`);
 });
 
 
 app.get("/urls/:id", (req, res) => {
   if (!req.session.user_id) {
-    res.send("Please login to enable this feature.");
+    return res.send("Please login to enable this feature.");
   }
   if (urlDatabase[req.params.id].userID !== req.session.user_id) {
-    res.status(403).send('403 Forbidden');
+    return res.status(403).send('403 Forbidden');
   }
   const templateVars = { user: users[req.session.user_id], id: req.params.id, longURL: urlDatabase[req.params.id].longURL };
-  res.render("urls_show", templateVars);
+  return res.render("urls_show", templateVars);
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  return res.json(urlDatabase);
 });
 
 app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World<b></body></html>");
+  return res.send("<html><body>Hello <b>World<b></body></html>");
 });
 
 app.listen(PORT, () => {
