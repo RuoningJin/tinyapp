@@ -4,7 +4,7 @@ const app = express();
 const PORT = 8080;
 // const morgan = require('morgan'); //uncomment if you would like to use this feature
 const bcrypt = require('bcryptjs');
-const {findUser} = require('./helpers.js');
+const {findUser, generateRandomString, urlsForUser} = require('./helpers.js');
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -28,26 +28,6 @@ const users = {
     email: "user2@example.com",
     password: bcrypt.hashSync("dishwasher-funk", 10)
   },
-};
-
-//functions
-const generateRandomString = () => {
-  const possChar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let randomString = '';
-  while (randomString.length < 6) {
-    randomString += possChar.charAt(Math.floor(Math.random() * possChar.length));
-  }
-  return randomString;
-};
-
-const urlsForUser = (id) => {
-  const userData = {};
-  for (const data in urlDatabase) {
-    if (urlDatabase[data].userID === id) {
-      userData[data] = urlDatabase[data];
-    }
-  }
-  return userData;
 };
 
 //middlewares
@@ -140,7 +120,7 @@ app.get("/urls", (req, res) => {
   if (!req.session.user_id) {
     res.send("Please login to enable the features.");
   }
-  const userData = urlsForUser(req.session.user_id);
+  const userData = urlsForUser(req.session.user_id, urlDatabase);
   const templateVars = {user: users[req.session.user_id], urls: userData};
   res.render("urls_index", templateVars);
 });
