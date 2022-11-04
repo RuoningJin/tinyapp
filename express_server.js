@@ -71,7 +71,10 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if (!req.session.user_id) {
+    res.redirect('/login');
+  }
+  res.redirect('/urls');
 });
 
 //Register
