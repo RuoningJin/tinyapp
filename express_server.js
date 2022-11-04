@@ -2,7 +2,7 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080;
-const morgan = require('morgan');
+// const morgan = require('morgan'); //uncomment if you would like to use this feature
 const bcrypt = require('bcryptjs');
 const {findUser} = require('./helpers.js');
 app.set("view engine", "ejs");
@@ -18,8 +18,8 @@ const urlDatabase = {
   },
 };
 const users = {
-  userRandomID: {
-    id: "userRandomID",
+  aJ48lW: {
+    id: "aJ48lW",
     email: "user@example.com",
     password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
@@ -52,8 +52,9 @@ const urlsForUser = (id) => {
 
 //middlewares
 
+// app.use(morgan('dev')); //uncomment to use this feature
+
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2', 'key3'],
